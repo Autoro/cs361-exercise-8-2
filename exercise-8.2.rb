@@ -1,109 +1,158 @@
-class Poker
-  def initialize(players)
-    @players = players
-    @hands = []
-    players.length().times { |x| @hands.append(nil) }
+# Changes:
+# Created Player base class.
+# Created Game base class.
+# Implemented concrete class for each game type.
+# Moved stringifying player details to concrete player classes.
+# Changed each game class to implement game base class.
+# Each game class now takes in an array of player objects rather than array objects.
+# Changed PlayGame class to take it a game object.
+# Created arrays of player objects for each game to pass in.
+
+class Player
+  attr_reader :name
+
+  def initialize(name)
+    @name = name
   end
 
-  def play_poker()
-    puts "Players in the poker game:"
-    @players.length().times { |i| puts "#{self.get_player_name(i)}: #{self.get_player_hand(i)}" }
-    # [pretend there's code here]
-  end
-
-  def get_results()
-    return "[pretend these are poker results]"
-  end
-
-  def get_player_name(i)
-    return @players[i]
-  end
-
-  def get_player_hand(i)
-    return @hands[i]
+  def to_s
+    "#{ player.name }"
   end
 end
 
-class Chess
+class Game
+  attr_reader :players
+
   def initialize(players)
     @players = players
   end
 
   def play_game()
-    puts "Players in the chess game:"
-    @players.length().times { |x| puts "#{self.get_player_name(x)}: #{@players[x][1]}" }
+    puts "Players in the game:"
+    self.players.each { |player| puts player }
+  end
+
+  def get_results()
+    "[pretend these are game results]"
+  end
+end
+
+class PokerPlayer < Player
+  attr_reader :hand
+
+  def initialize(name, hand = nil)
+    super(name)
+
+    @hand = hand
+  end
+
+  def to_s
+    "#{ self.name }: #{ self.hand }"
+  end
+end
+
+class Poker < Game
+  def play_game()
+    puts "Players in the poker game:"
+    self.players.each { |player| puts player }
     # [pretend there's code here]
   end
 
   def get_results()
-    return "[pretend these are chess results]"
-  end
-
-  def get_player_name(i)
-    @players[i][0]
+    "[pretend these are poker results]"
   end
 end
 
-class GoPlayer
-  attr_reader :name, :color
-
+class ChessPlayer < Player
+  attr_reader :color
+  
   def initialize(name, color)
-    @name = name
+    super(name)
+
     @color = color
   end
+
+  def to_s
+    "#{ self.name }: #{ self.color }"
+  end
 end
 
-class Go
-  def initialize(players)
-    @players = []
-    players.each { |x, y| @players.append(GoPlayer.new(x, y)) }
-  end
-
-  def play()
-    puts "Players in the go game:"
-    @players.each { |player| puts "#{player.name}: #{player.color}" }
+class Chess < Game
+  def play_game()
+    puts "Players in the chess game:"
+    self.players.each { |player| puts player }
     # [pretend there's code here]
   end
 
-  def get_score()
-    return "[pretend these are go results]"
+  def get_results()
+    "[pretend these are chess results]"
+  end
+end
+
+class GoPlayer < Player
+  attr_reader :color
+
+  def initialize(name, color)
+    super(name)
+
+    @color = color
+  end
+
+  def to_s
+    "#{ self.name}: #{ self.color }"
+  end
+end
+
+class Go < Game
+  def play_game()
+    puts "Players in the go game:"
+    self.players.each { |player| puts player }
+    # [pretend there's code here]
+  end
+
+  def get_results()
+    "[pretend these are go results]"
   end
 end
 
 class PlayGames
-
-  def initialize(game_number, player_list)
-    @player_list = player_list
-    @game_number = game_number
+  attr_reader :game
+  def initialize(game)
+    @game = game
   end
 
   def play()
-    case @game_number
-    when 1
-      poker = Poker.new(@player_list)
-      poker.play_poker()
-      puts poker.get_results()
-    when 2
-      chess = Chess.new(@player_list)
-      chess.play_game()
-      puts chess.get_results()
-    when 3
-      go = Go.new(@player_list)
-      go.play()
-      puts go.get_score()
-    end
+    self.game.play_game
+    puts self.game.get_results
   end
 end
 
-pg = PlayGames.new(1, ["alice", "bob", "chris", "dave"])
+pokerPlayers = [
+  PokerPlayer.new("alice"),
+  PokerPlayer.new("bob"),
+  PokerPlayer.new("chris"),
+  PokerPlayer.new("dave")
+]
+
+chessPlayers = [
+  ChessPlayer.new("alice", "white"),
+  ChessPlayer.new("bob", "black")
+]
+
+goPlayers = [
+  GoPlayer.new("alice", "white"),
+  GoPlayer.new("bob", "black")
+]
+
+pg = PlayGames.new(Poker.new(pokerPlayers))
 pg.play()
 
 puts
 
-pg = PlayGames.new(2, [["alice", "white"], ["bob", "black"]])
+pg = PlayGames.new(Chess.new(chessPlayers))
 pg.play()
 
 puts
 
-pg = PlayGames.new(3, [["alice", "white"], ["bob", "black"]])
+pg = PlayGames.new(Go.new(goPlayers))
 pg.play()
